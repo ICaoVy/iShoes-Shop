@@ -60,6 +60,23 @@ public class SearchDAO {
         }
         return list;
     }
+    
+        public int getStockOfProduct(int pro_id) {
+        ResultSet rs = null;
+        int quantity_product = 0;
+        try {
+
+            PreparedStatement ps = conn.prepareStatement("select * from Product p join Stock s on s.pro_id = p.pro_id where p.pro_id = ?");
+            ps.setInt(1, pro_id);
+            rs = ps.executeQuery();
+            if(rs.next()){
+                quantity_product = rs.getInt("stock_import") - rs.getInt("stock_export");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return quantity_product;
+    }
 
     public List getProduceSearchName(String pro_name) {
         ResultSet rs = null;

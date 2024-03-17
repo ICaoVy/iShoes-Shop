@@ -13,16 +13,16 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="Website Icon" href="./images/LogoICafy.png" type="png" />
+        <link rel="Website Icon" href="<%= request.getContextPath()%>/images/LogoICafy.png" type="png" />
         <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
             />
         <link
             rel="stylesheet"
-            href="./lib/bootstrap/bootstrap_css/bootstrap.min.css"
+            href="<%= request.getContextPath()%>/lib/bootstrap/bootstrap_css/bootstrap.min.css"
             />
-        <link rel="stylesheet" href="./css/style.css" />
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/css/style.css" />
         <title>iShoes</title>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
                 integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"
@@ -46,7 +46,7 @@
                 <nav class="container">
                     <div class="row">
                         <div class="col-md-3 header-1 ">
-                            <a href="/"><img width="70px" src="./images/LogoICafy-removebg-preview.png" width="container-fluid"
+                            <a href="/"><img width="70px" src="<%= request.getContextPath()%>/images/LogoICafy-removebg-preview.png" width="container-fluid"
                                              alt="logo" /></a>
                             <i id="nodebar" class="bi bi-list"></i>
                         </div>
@@ -115,9 +115,9 @@
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
@@ -135,10 +135,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -151,9 +151,9 @@
                     <div class="text-center">
                         <h3>Reset Password</h3>
                         <p>We will email you to reset your password</p>
-                        <form class="form-login" action="">
-                            <input type="email" class="form-control" placeholder="Email">
-                            <button class="form-control mt-3 button-login" type="submit">Send</button>
+                        <form class="form-login" action="ForgotController" method="post" onsubmit="return validateForm()">
+                            <input name="email" type="email" id="email" class="form-control" placeholder="Email">
+                            <button name="btn-forgot" class="form-control mt-3 button-login" type="submit">Send</button>
                         </form>
                     </div>
                 </div>
@@ -209,10 +209,38 @@
             <span>&copy; Copyright 2023, Design by Ha Cao Vi</span>
         </div>
     </footer>
+    <%
+        String checkEmail = (String) session.getAttribute("emailisExist");
+        if (checkEmail != null) {
+    %>
+<script>
+    alert("The email is exists in the system!!!");</script>
+    <%
+            session.removeAttribute("emailisExist");
+        }
+    %>
+<script>
+        function validateForm() {
+            var emailInput = document.getElementById('email');
+            var emailValue = emailInput.value.trim();
 
+            // Kiểm tra input rỗng
+            if (emailValue === '') {
+                alert('Email cannot be empty');
+                return false;
+            }
 
-    <script src="./lib/bootstrap/bootstrap_js/bootstrap.min.js"></script>
-    <script src="./js/main.js"></script>
+            // Kiểm tra đuôi email
+            if (!emailValue.endsWith('@gmail.com')) {
+                alert('Email must have "@gmail.com" domain');
+                return false;
+            }
+
+            return true; // Nếu không có lỗi, cho phép submit
+        }
+    </script>
+    <script src="<%= request.getContextPath()%>/lib/bootstrap/bootstrap_js/bootstrap.min.js"></script>
+    <script src="<%= request.getContextPath()%>/js/main.js"></script>
 </body>
 </html>
 

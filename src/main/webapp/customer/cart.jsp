@@ -51,7 +51,7 @@
 
                         <div id="hihi" class="col-md-6 clickClose">
                             <ul class="nav mt-3">
-                                <li class="nav-item"><a class="nav-link" id="current-main" href="/">Home</a></li>
+                                <li class="nav-item"><a class="nav-link"  href="/">Home</a></li>
                                 <li class="nav-item"><a class="nav-link" href="/ProductController">Product</a></li>
                                 <li class="nav-item"><a class="nav-link" href="/IntroduceController">Introduce</a></li>
                                 <li class="nav-item"><a class="nav-link" href="/ContactController">Contact</a></li>
@@ -96,26 +96,26 @@
                         </div>
 
 
-                        <div style="display: <%= yeslogin%>" id="hehe" class="header-card col-md-3 text-end mt-3 clickClose">
+                        <div  style="display: <%= yeslogin%>" id="hehe" class="header-card col-md-3 text-end mt-3 clickClose">
                             <div class="row">
-                                <div style="position: relative" class="col-md-6 text-end">
+                                <div id="current-main" style="position: relative" class="col-md-6 text-end">
                                     <%
                                         String checkCount = "";
                                         if (count == 0) {
                                             checkCount = "none";
                                         }
                                     %>
-                                    <span class="align-items-center quantity-order" style="display: <%= checkCount%> ;border-radius:100px ; color: white;background: red; padding: 0px 6px; width: fit-content;"><%= count%></span>
-                                    <a href="/CartController"><i class="bi bi-cart2"></i></a>
+                                    <span class="align-items-center quantity-order" style="display: ${cart_list.size()} ;border-radius:100px ; color: white;background: red; padding: 0px 6px; width: fit-content;">${cart_list.size()}</span>
+                                    <a  href="/CartController"><i class="bi bi-cart2"></i></a>
                                 </div>
                                 <div class="col-md-4 text-start mt-1">
                                     <div class="btn-group col-md-3">
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
@@ -133,10 +133,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -159,8 +159,11 @@
                         <div class="col-md-8">
 
                             <p>You currently have <strong> ${cart_list.size()}</strong>product in your cart</p> 
-
+                             <c:if test="${cart_list.size() == 0}">
+                                 <h4 style="text-align: center">Your cart is null</h4>
+                                </c:if>
                             <div class="row pro-cart-list">
+                               
                                 <c:forEach items="${cart_list}" var="c">
                                     <div class="cart-item row">
                                         <div class="col-md-1  mt-5">
@@ -174,16 +177,17 @@
                                         </div>
                                         <div class="col-md-5 mt-3">
                                             <p name="pro_name" >${c.pro_name}</p>
-                                            <strong name="cart_price" class="cart-price">${c.cart_price}<span>$</span></strong>
+                                            <strong name="cart_price" class="cart-price">${c.cart_price}<span>vnd</span></strong>
+                                            <p name="pro_size">Size: ${c.cart_size}</p>
                                         </div>
                                         <div class="text-end col-md-4 mt-3">
-                                            <div class="col-md-6"></div>
-                                            <div class="col-md-6 quantity-product">
-                                                <div class="row">
-                                                    <a class="btn col-2 mx-3 btn-sm btn-decre btn-dark" href="/CartController/DecQuan/${c.pro_id}">-</i></a>
-                                                    <input type="text" name="quantity" class="mx-1 col-2 form-control cart-quantity" value="${c.cart_quantity}" readonly>
-                                                    <a  class="btn col-2 btn-sm btn-incre btn-dark mx-2" href="/CartController/IncQuan/${c.pro_id}">+</i></a>
-                                                    <a onclick="return confirm('Do you want to delete ${c.pro_name} from cart?')" href="/CartController/Delete/${c.cart_id}"class="btn btn-sm btn-danger mt-2">Remove</a>
+                                            
+                                            <div class="col-md-12 text-end quantity-product">
+                                                <div class="row text-center">
+                                                    <a class="btn col-md-2 mx-3 btn-sm btn-decre btn-dark" href="/CartController/DecQuan/${c.pro_id}">-</i></a>
+                                                    <input type="text" name="quantity" class="mx-1 col-md-1 form-control cart-quantity" value="${c.cart_quantity}" readonly>
+                                                    <a  class="btn col-md-2 btn-sm btn-incre btn-dark mx-2" href="/CartController/IncQuan/${c.pro_id}">+</i></a>
+                                                    <a style="width: fit-content;padding: 5px 65px " onclick="return confirm('Do you want to delete ${c.pro_name} from cart?')" href="/CartController/Delete/${c.cart_id}"class="btn btn-sm btn-danger mt-2">Remove</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -196,7 +200,7 @@
                                 <h3>Information Order</h3>
                                 <h4 class="row">                                   
                                     <p class="col-md-6 text-start">Total: </p>                                    
-                                    <p class="col-md-4" style="color: red">$<strong id="total-price" class="col-md-6 text-start" style="color: red;"></strong></p>
+                                    <p class="col-md-4" style="color: red"><strong id="total-price" class="col-md-6 text-start" style="color: red;"></strong>vnd</p>
 
                                 </h4>
                                 <p>

@@ -117,9 +117,9 @@
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
@@ -137,10 +137,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -316,6 +316,52 @@
 
     <script src="../lib/bootstrap/bootstrap_js/bootstrap.min.js"></script>
     <script src="../tri/js/main.js"></script>
+    <script>
+                            function validatePay() {
+//    var fullName = document.querySelector('#pay input[placeholder="Full name"]').value;
+                                var email = document.querySelector('#pay input[placeholder="Email"]').value;
+                                var phone = document.querySelector('#pay input[placeholder="Phone"]').value;
+                                var deliveryAddress = document.querySelector('#pay textarea[placeholder="Delivery Address"]').value;
+
+                                // Reset error message before check validate
+                                resetErrorMessages();
+
+                                // Check form
+//                                if (fullName === '') {
+//                                    displayErrorMessage('full-name-error', 'Please enter your Full name');
+//                                }
+
+                                if (email === '') {
+                                    displayErrorMessage('email-error', 'Please enter your Email');
+                                } else {
+                                    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                    if (!emailPattern.test(email)) {
+                                        displayErrorMessage('email-error', 'Your Email invalid!');
+                                    }
+                                }
+
+                                if (phone === '') {
+                                    displayErrorMessage('phone-error', 'Please enter your phone number');
+                                } else {
+                                    var phonePattern = /^\d{10}$/;
+                                    if (!phonePattern.test(phone)) {
+                                        displayErrorMessage('phone-error', 'Your phone number invalid!');
+                                    }
+                                }
+
+                                if (deliveryAddress === '') {
+                                    displayErrorMessage('delivery-address-error', 'Please enter delivery address');
+                                }
+
+                                // If there is an error, prevent form submission
+                                if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
+                                    return false;
+                                }
+
+                                // If all is valid, submit the form
+                                return true;
+                            }
+    </script>
 </body>
 
 </html>

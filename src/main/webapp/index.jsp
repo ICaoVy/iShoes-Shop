@@ -90,14 +90,14 @@
                             } else {
                                 noLogin = "";
                                 yeslogin = "none";
-                            }
+                            }   
                         %>
-                        <div style="display: <%= noLogin%>" id="hehe" class="header-card col-md-3 text-end mt-4 clickClose">
+                        <div style="display: <%= noLogin%>" id="hehe" class="header-card col-md-3 text-end mt-3 clickClose">
                             <div class="row">
                                 <div class="col-md-8">
                                     <a href="/LoginController"><i class="bi bi-cart2"></i></a>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-0">
                                     <a href="/LoginController"><i class="bi bi-person-circle"></i></a>
                                 </div>
                             </div>
@@ -106,7 +106,7 @@
 
                         <div style="display: <%= yeslogin%>" id="hehe" class="header-card col-md-3 text-end mt-3 clickClose">
                             <div class="row">
-                                <div style="position: relative" class="col-md-6 mt-2 text-end">
+                                <div style="position: relative" class="col-md-6  text-end">
                                     <%
                                         String checkCount = "";
                                         if (count == 0) {
@@ -122,7 +122,7 @@
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
                                             <a href="/ProfileController" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
 <!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>

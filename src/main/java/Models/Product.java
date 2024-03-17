@@ -82,6 +82,7 @@ public class Product extends Stock {
         this.stock_import = stock_import;
     }
 
+        
     @Override
     public int getPro_id() {
         return pro_id;
@@ -117,7 +118,7 @@ public class Product extends Stock {
     }
 
     public float getPro_price() {
-        return pro_price;
+        return pro_price ;
     }
 
     public void setPro_price(float pro_price) {

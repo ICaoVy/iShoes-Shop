@@ -36,6 +36,17 @@ public class Customer {
         this.cus_deleted = cus_deleted;
     }
 
+    public Customer(int cus_id, String cus_fullname, String cus_email, String cus_phone, Date cus_birthday, String cus_address) {
+        this.cus_id = cus_id;
+        this.cus_fullname = cus_fullname;
+        this.cus_email = cus_email;
+        this.cus_phone = cus_phone;
+        this.cus_birthday = cus_birthday;
+        this.cus_address = cus_address;
+    }
+    
+    
+
     public int getCus_id() {
         return cus_id;
     }

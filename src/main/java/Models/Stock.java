@@ -82,6 +82,7 @@ public class Stock {
         this.import_at = import_at;
     }
 
+
     
     
 }

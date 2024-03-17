@@ -4,6 +4,8 @@
     Author     : ASUS
 --%>
 
+<%@page import="Models.Orders"%>
+<%@page import="java.util.List"%>
 <%@page import="DAOs.CartDAO"%>
 <%@page import="Models.Customer"%>
 <%@page import="DAOs.AccountDAO"%>
@@ -37,12 +39,32 @@
                 integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"
         defer></script>
     </head>
+
     <style>
         .quantity-order{
             position: absolute;
             margin-left: 15px;
             margin-bottom: 10px;
+
         }
+        .order-status {
+            border: none;
+            width: 90px;
+            position: relative;
+            top: -7px;
+            margin-left: 3px
+        }
+        .processing {
+            color: darkorange;
+        }
+
+        .approved {
+            color: green;
+        }
+
+
+
+
     </style>
     <body>
         <header>
@@ -119,9 +141,9 @@
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
@@ -136,10 +158,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -149,8 +171,13 @@
             <div class="d-flex justify-content-around cart-list-1">
                 <a id="current-page" href="/OrderController/Ordered">Purchase History</a>
             </div>
+            <%-- Initialize counters for statuses --%>
+            <%-- Initialize counters for statuses --%>
+            <% int processingCount = 0; %>
+            <% int approvedCount = 0;%>
+            <% int totalCount = approvedCount + processingCount;%>
 
-            <h5 class="mt-4">Your order: 0 Unpaid, 7 Pending, 6 Finished</h5>
+            <h5 class="mt-4">Your orders: <span id="processingCount"></span> Processing, <span id="approvedCount"></span> Approved, <span id="totalCount"></span> Total Order</h5>
 
             <table>
                 <tr>
@@ -179,12 +206,13 @@
                                 <div style="display: flex; justify-content: space-between;">
                                     <div class="status">
                                         <h6>Order status:</h6>
-                                        <h6 class="highlight">${o.order_status}</h6>
+                                        <input disabled id="status" class="order-status"  value="${o.order_status}">
+
                                     </div>
                                     <div >
-                                        <button>View order details</button>
-                                        <button>Buy again</button>
-                                        <a style="border-radius: 30px" class="btn btn-danger" href="/OrderController/Ordered/cancel/">Cancel</a>
+                                        <a style="border-radius: 30px" class="btn btn-primary" href="/OrderController/Ordered/BuyAgain/${o.order_id}">Buy Again</a>
+                                        <a style="border-radius: 30px" class="btn btn-success" href="/OrderController/Ordered/detail/${o.order_id}">Detail</a>
+                                        <a style="border-radius: 30px" class="btn btn-danger" href="/OrderController/Ordered/cancel/${o.order_id}">Cancel</a>
                                     </div>
                                 </div>
                             </td>
@@ -209,5 +237,41 @@
             </table>
 
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var orderStatusInputs = document.querySelectorAll('.order-status');
+                var processingCount = 0;
+                var approvedCount = 0;
+
+                // Define CSS classes for different statuses
+                var processingClass = "processing";
+                var approvedClass = "approved";
+
+                orderStatusInputs.forEach(function (input) {
+                    var status = parseInt(input.value);
+                    if (status === 0) {
+                        processingCount++;
+                        // Set the value of the current element to "Processing"
+                        input.value = "Processing";
+                        // Add CSS class for processing
+                        input.classList.add(processingClass);
+                    } else if (status === 1) {
+                        approvedCount++;
+                        // Set the value of the current element to "Approved"
+                        input.value = "Approved";
+                        // Add CSS class for approved
+                        input.classList.add(approvedClass);
+                    }
+                });
+
+
+                var totalCount = processingCount + approvedCount;
+                // Update counts in HTML
+                document.getElementById('processingCount').textContent = processingCount;
+                document.getElementById('approvedCount').textContent = approvedCount;
+                document.getElementById('totalCount').textContent = totalCount;
+            });
+        </script>
+
     </body>
 </html>

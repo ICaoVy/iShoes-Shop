@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.LinkedList;
 import java.util.List;
+import jdk.nashorn.internal.ir.BreakNode;
 
 /**
  *
@@ -130,6 +131,7 @@ public class ProductController extends HttpServlet {
 
         if (request.getParameter("AddtoCard") != null) {
             int pro_id = Integer.parseInt(request.getParameter("pro_id"));
+            int pro_size = Integer.parseInt(request.getParameter("sizeoption"));
             Product pro = pdao.GetProById(pro_id);
             String pro_name = request.getParameter("pro_name");
             String pro_priceString = request.getParameter("pro_price");
@@ -144,46 +146,88 @@ public class ProductController extends HttpServlet {
                 if (checkStock < 0) {
                     HttpSession session1 = request.getSession();
                     session1.setAttribute("checkStock", "The product you just purchased is out of stock");
+                    response.sendRedirect("/ProductController");
+                    return;
+                } else {
+                     session.removeAttribute("checkStock");
+                    int cusID = Integer.parseInt(cus_id);
+                    float pro_price = Float.parseFloat(pro_priceString);
+                    
+                    int pro_detailquan = Integer.parseInt(pro_detailquanString);
+//            int pro_detailquan = 3;
+
+                    // Check if the product is already in the cart
+                    boolean productExists = false;
+                    if (cart_list != null) {
+                        for (Carts c : cart_list) {
+                            if (pro_id == c.getPro_id() && pro_size == c.getCart_size()) {
+                                // Product already exists in the cart, update its quantity
+                                c.setCart_quantity(c.getCart_quantity() + pro_detailquan);
+                                cdao.UpdateQuan(c);
+                                productExists = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!productExists) {
+                        // Product does not exist in the cart, add it
+                        Carts c = new Carts();
+                        c.setPro_id(pro_id);
+                        c.setCus_id(cusID);
+                        c.setPro_name(pro_name);
+                        c.setCart_price(pro_price);
+                        c.setCart_quantity(pro_detailquan); // Set initial quantity
+                        c.setCart_size(pro_size);
+                        c.setCart_colour(pro_colour);
+                        // Thêm sản phẩm vào giỏ hàng
+                        c = cdao.AddCart(c);
+                    }
+
+                    cart = cdao.GetListCartByAccID(cusID);
+                    session.setAttribute("cart_list", cart);
+                    response.sendRedirect("/ProductController");
+                    return; // Chấm dứt việc xử lý sau khi thêm sản phẩm vào giỏ hàng
                 }
+
             }
-            int cusID = Integer.parseInt(cus_id);
-            float pro_price = Float.parseFloat(pro_priceString);
-            int pro_size = Integer.parseInt(request.getParameter("sizeoption"));
-            int pro_detailquan = Integer.parseInt(pro_detailquanString);
+//            int cusID = Integer.parseInt(cus_id);
+//            float pro_price = Float.parseFloat(pro_priceString);
+//            int pro_size = Integer.parseInt(request.getParameter("sizeoption"));
+//            int pro_detailquan = Integer.parseInt(pro_detailquanString);
 //            int pro_detailquan = 3;
 
             // Check if the product is already in the cart
-            boolean productExists = false;
-            if (cart_list != null) {
-                for (Carts c : cart_list) {
-                    if (pro_id == c.getPro_id()) {
-                        // Product already exists in the cart, update its quantity
-                        c.setCart_quantity(c.getCart_quantity() + pro_detailquan);
-                        cdao.UpdateQuan(c);
-                        productExists = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!productExists) {
-                // Product does not exist in the cart, add it
-                Carts c = new Carts();
-                c.setPro_id(pro_id);
-                c.setCus_id(cusID);
-                c.setPro_name(pro_name);
-                c.setCart_price(pro_price);
-                c.setCart_quantity(pro_detailquan); // Set initial quantity
-                c.setCart_size(pro_size);
-                c.setCart_colour(pro_colour);
-                // Thêm sản phẩm vào giỏ hàng
-                c = cdao.AddCart(c);
-            }
-
-            cart = cdao.GetListCartByAccID(cusID);
-            session.setAttribute("cart_list", cart);
-            response.sendRedirect("/ProductController");
-            return; // Chấm dứt việc xử lý sau khi thêm sản phẩm vào giỏ hàng
+//            boolean productExists = false;
+//            if (cart_list != null) {
+//                for (Carts c : cart_list) {
+//                    if (pro_id == c.getPro_id()) {
+//                        // Product already exists in the cart, update its quantity
+//                        c.setCart_quantity(c.getCart_quantity() + pro_detailquan);
+//                        cdao.UpdateQuan(c);
+//                        productExists = true;
+//                        break;
+//                    }
+//                }
+//            }
+//            if (!productExists) {
+//                // Product does not exist in the cart, add it
+//                Carts c = new Carts();
+//                c.setPro_id(pro_id);
+//                c.setCus_id(cusID);
+//                c.setPro_name(pro_name);
+//                c.setCart_price(pro_price);
+//                c.setCart_quantity(pro_detailquan); // Set initial quantity
+//                c.setCart_size(pro_size);
+//                c.setCart_colour(pro_colour);
+//                // Thêm sản phẩm vào giỏ hàng
+//                c = cdao.AddCart(c);
+//            }
+//
+//            cart = cdao.GetListCartByAccID(cusID);
+//            session.setAttribute("cart_list", cart);
+//            response.sendRedirect("/ProductController");
+//            return; // Chấm dứt việc xử lý sau khi thêm sản phẩm vào giỏ hàng
         }
 
         if (request.getParameter("btn-search") != null) {

@@ -38,7 +38,7 @@
 
                 <label for="productPicture">Product Picture:</label> 
                 <input type="file" id="productPicture" name="productPicture">
-                <img src="" alt="<%= pro.getPro_picture()%>" id="previewImage" style="max-width: 200px;">
+                <img src="../images/<%= pro.getPro_picture()%>" alt="<%= pro.getPro_picture()%>" id="previewImage" style="max-width: 200px;">
 
                 <label for="productPrice">Product Price:</label>
                 <input type="text" id="productPrice" name="productPrice" value="<%= pro.getPro_price()%>" >

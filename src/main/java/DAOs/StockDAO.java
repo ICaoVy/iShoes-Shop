@@ -47,7 +47,7 @@ public class StockDAO {
             ps.setDate(5, kh.getImport_at());
             count = ps.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StockDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return (count == 0) ? null : kh;
     }

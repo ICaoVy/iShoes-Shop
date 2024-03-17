@@ -119,12 +119,12 @@
                                     <div class="btn-group col-md-3">
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
-                                        <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                       <div class="dropdown-menu menu-homeC">
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
-                                                <button name="btnlogout" style="background: none;color: black; border: none">Logout</button>
+                                                <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
                                             <!--                                        <a href="/LogoutController" class="dropdown-item">Logout</a>-->
                                         </div>
@@ -140,10 +140,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -193,7 +193,7 @@
                                 <ul class="cat-title-show luxuryUL">
                                     <%
                                         CategoryDAO cgDAO = new CategoryDAO();
-                                        ResultSet rscate = cgDAO.getLuxyry();
+                                        ResultSet rscate = cgDAO.getLuxury();
                                         while (rscate.next()) {
                                     %>
                                     <li><a href="/ProductController/Luxury?nameCate=<%= rscate.getString("cate_name") + pathForCate%>"><%= rscate.getString("cate_name")%></a></li>
@@ -528,7 +528,7 @@
                                         %>
                                     </div>
                                     <p class="text-start mt-2"><%= l.getPro_name()%><br>
-                                        <strong><%= l.getPro_price()%></strong>
+                                        <strong><%= l.getPro_price()%>vnd</strong>
                                     </p>
 
                                 </div>

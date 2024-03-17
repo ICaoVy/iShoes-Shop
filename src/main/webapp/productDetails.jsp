@@ -3,6 +3,11 @@
     Created on : Feb 24, 2024, 2:59:11 PM
     Author     : ASUS
 --%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.List"%>
+<%@page import="Models.Product"%>
 <%@page import="Models.Stock"%>
 <%@page import="DAOs.CartDAO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -114,9 +119,9 @@
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
@@ -134,10 +139,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -150,12 +155,16 @@
                     <div class="cart-mobile-container col-md-2 text-end mt-4">
                         <%
                             ProductDAO pDAO = new ProductDAO();
+                            String pro_code = "";
+                            if (request.getParameter("proCode") != null) {
+                                pro_code = request.getParameter("proCode");
+                            }
                             int pro_id = 0;
                             if (request.getParameter("id") != null) {
                                 pro_id = Integer.parseInt(request.getParameter("id"));
                             }
 
-                            ResultSet rs = pDAO.getGallery(pro_id);
+                            ResultSet rs = pDAO.getGallery(pro_code);
                             while (rs.next()) {
                         %>
 
@@ -164,10 +173,10 @@
                         </div>
                         <%
                             }
+
                         %>
                     </div>
-                    <%
-                        ResultSet rs1 = pDAO.getProduct(pro_id);
+                    <%                        ResultSet rs1 = pDAO.getProduct(pro_id);
                         while (rs1.next()) {
                     %>
 
@@ -179,23 +188,40 @@
                     <div class="col-md-6 mt-4">
                         <div class="quantity-product mt-4">
                             <form id="form-cart-1" action="" method="post" >
-                                <h2><%= rs1.getString("pro_name")%></h2>
+                                <h2><%= rs1.getString("pro_name")%> <strong class="checkSize"></strong></h2>
                                 <div class="price-product mt-3">
-                                    <h4 id="price"><%= rs1.getString("pro_price")%></h4>
-                                </div>
-                                <div class="row image-color-details" style="width: 400px;">
                                     <%
-                                        ResultSet rs2 = pDAO.getProduceCode(pDAO.subString(rs1.getString("pro_code")));
-                                        while (rs2.next()) {
+                                        if (rs1.getFloat("pro_discount") == 0) {
                                     %>
-                                    <a href="Details?id=<%= rs2.getString("pro_id")%>&proCode=<%= rs2.getString("pro_code")%>" class="col-md-3" ><img class="img-fluid" src="<%= request.getContextPath()%>/images/<%= rs2.getString("pro_picture")%>" alt="product1"></a>
+                                    <h4 name="pro_price" id="price"><%= (rs1.getFloat("pro_price") - rs1.getFloat("pro_price") * rs1.getFloat("pro_discount"))%></h4>
+                                    <%
+                                    } else {
+                                    %>
+                                    <del><h4 id="price"><%= rs1.getFloat("pro_price")%></h4></del><h4 name="pro_price" style="color: red" id="price"><%= (rs1.getFloat("pro_price") - rs1.getFloat("pro_price") * rs1.getFloat("pro_discount"))%></h4>
                                         <%
                                             }
                                         %>
+
                                 </div>
+                                <div class="row image-color-details" style="width: 400px;">
+                                    <%
+                                        List<Product> productListChild = pDAO.getProduceCode(pDAO.subString(rs1.getString("pro_code")));
+                                        Set<String> uniqueProductCodes1 = new HashSet<>();
+                                        for (Product lc : productListChild) {
+
+                                            if (uniqueProductCodes1.add(lc.getPro_code())) {
+
+                                    %>
+                                    <a style="opacity: <%= (pDAO.getStockOfProduct(lc.getPro_code(), lc.getPro_size()) <= 0) ? "0.5" : "1"%>" href="Details?id=<%= lc.getPro_id()%>&proCode=<%= lc.getPro_code()%>" class="col-md-3" ><img class="img-fluid" src="<%= request.getContextPath()%>/images/<%= lc.getPro_picture()%>" alt="<%= lc.getPro_picture()%>"></a>
+                                        <%
+                                                }
+                                            }
+                                        %>
+                                </div>
+
                                 <!--//-->
                                 <input style="display: none" type="text" name="pro_name" value="<%= rs1.getString("pro_name")%>">
-                                <input style="display: none" type="text" name="pro_price"value="<%= rs1.getString("pro_price")%>">
+                                <input style="display: none" type="text" name="pro_price"value="<%= (rs1.getFloat("pro_price") - rs1.getFloat("pro_price") * rs1.getFloat("pro_discount"))%>">
                                 <input style="display: none" type="text" name="pro_picture" value="<%= rs1.getString("pro_picture")%>">
                                 <input style="display: none" type="text" name="pro_id" value="<%= rs1.getInt("pro_id")%>">
                                 <input style="display: none" type="text" name="pro_colour" value="<%= rs1.getString("pro_colour")%>">
@@ -203,14 +229,14 @@
 
 
                                 <!--//-->
-                                <input type="hidden" name="id" value="<%= pro_id%>">
+                              <input type="hidden" name="id" value="<%= pro_id%>">
                                 <div class="size">
                                     <div class="row">
                                         <h5 class="col-md-3">Choose size:</h5>
                                         <div class="size-shoes sizeUL">
                                             <select id="id" style="width: 100px" class="form-control" name="sizeoption">
                                                 <%
-                                                    String pro_code = request.getParameter("proCode");
+                                             
                                                     ResultSet rs4 = pDAO.getProductByProCode(pro_code);
                                                     while (rs4.next()) {
                                                 %>
@@ -346,9 +372,15 @@
             quantityInputForm.value = currentFormValue + 1;
             e.preventDefault();
         }
+        function onChangeInValue(event) {
+            // Lấy giá trị mới của input
+            var newValue = event.target.value;
 
-        function addToCart() {
-            // Thêm logic xử lý khi nút "Thêm vào giỏ hàng" được nhấn
+            quantityInput = newValue;
+            quantityInputForm = newValue;
+
+            // Thực hiện các hành động mong muốn với giá trị mới tại đây
+            console.log("Giá trị mới của input là: " + newValue);
         }
     </script>
     <script src="./lib/bootstrap/bootstrap_js/bootstrap.min.js"></script>

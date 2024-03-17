@@ -37,6 +37,128 @@ public class ProductDAO {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public Product GetProIdByQuan (int pro_id) {
+        Product pro = null;
+        String sql = "select * from Product p join Orders_Details od on p.pro_id = od.pro_id join Stock s on s.pro_id = od.pro_id join Orders o on od.order_id = o.order_id where p.pro_id = ?";
+        try {
+            psTP = conn.prepareStatement(sql);
+            psTP.setInt(1, pro_id);          
+            rsTP = psTP.executeQuery();
+            if (rsTP.next()) {
+                pro = new Product(
+                        rsTP.getInt("pro_id"),
+                        rsTP.getInt("cate_id"),
+                        rsTP.getString("pro_code"),
+                        rsTP.getString("pro_name"),
+                        rsTP.getFloat("pro_price"),
+                        rsTP.getFloat("pro_discount"),
+                        rsTP.getString("pro_picture"),
+                        rsTP.getInt("pro_size"),
+                        rsTP.getString("pro_colour"),
+                        rsTP.getString("pro_brand"),
+                        rsTP.getString("pro_origin"),
+                        rsTP.getString("pro_material"),
+                        rsTP.getString("pro_description"),
+                        rsTP.getDate("pro_create_at"),
+                        rsTP.getDate("pro_update_at"),
+                        rsTP.getInt("pro_delete_at"),
+                        rsTP.getInt("stock_import")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return pro;
+    }
+
+    public List getAllProductDECS() {
+        ResultSet rs = null;
+        List<Product> list = new ArrayList<>();
+        try {
+            Statement st = conn.createStatement();
+            rs = st.executeQuery("SELECT * FROM Product where pro_delete_at = 0");
+            while (rs.next()) {
+                Product product = new Product(rs.getInt("pro_id"), rs.getInt("cate_id"), rs.getString("pro_code"), rs.getString("pro_name"), rs.getFloat("pro_price"), rs.getFloat("pro_discount"), rs.getString("pro_picture"), rs.getInt("pro_size"), rs.getString("pro_colour"), rs.getString("pro_brand"), rs.getString("pro_origin"), rs.getString("pro_material"), rs.getString("pro_description"), rs.getDate("pro_create_at"), rs.getDate("pro_update_at"), rs.getInt("pro_delete_at"));
+                list.add(product);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
+    public List getAllProduct(String pro_code, int pro_id) {
+        ResultSet rs = null;
+        List<Product> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Product p join Gallery g on p.pro_id = p.pro_id where p.pro_code =? and p.pro_id =? and p.pro_delete_at = 0 ORDER BY p.pro_id DESC");
+            ps.setString(1, pro_code);
+            ps.setInt(2, pro_id);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = new Product(rs.getInt("pro_id"), rs.getInt("cate_id"), rs.getString("pro_code"), rs.getString("pro_name"), rs.getFloat("pro_price"), rs.getFloat("pro_discount"), rs.getString("pro_picture"), rs.getInt("pro_size"), rs.getString("pro_colour"), rs.getString("pro_brand"), rs.getString("pro_origin"), rs.getString("pro_material"), rs.getString("pro_description"), rs.getDate("pro_create_at"), rs.getDate("pro_update_at"), rs.getInt("pro_delete_at"));
+                list.add(product);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
+    public ResultSet getGalley(int pro_id) {
+        ResultSet rs = null;
+
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Gallery where pro_id=?");
+            ps.setInt(1, pro_id);
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
+    }
+
+    public void deleteGallery(int gal_id) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("delete from Gallery where gal_id=?");
+            ps.setInt(1, gal_id);
+            ps.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public Gallery newGalerry(Gallery g, int pro_id) {
+        int count = 0;
+        try {
+            PreparedStatement ps = conn.prepareStatement("insert into Gallery values(?,?)");
+            ps.setInt(1, pro_id);
+            ps.setString(2, g.getGal_picture());
+            count = ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return (count == 0) ? null : g;
+    }
+
+    public int getStockOfProduct(int pro_id) {
+        ResultSet rs = null;
+        int quantity_product = 0;
+        try {
+
+            PreparedStatement ps = conn.prepareStatement("select * from Product p join Stock s on s.pro_id = p.pro_id where p.pro_id = ?");
+            ps.setInt(1, pro_id);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                quantity_product = (rs.getInt("stock_import") - rs.getInt("stock_export"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return quantity_product;
+    }
 
     public List getAllProduct() {
         ResultSet rs = null;
@@ -74,6 +196,38 @@ public class ProductDAO {
         return list;
     }
 
+    public List getProduceCodeEnd(String pro_code) {
+        ResultSet rs = null;
+        List<Product> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Product p join Stock c on c.pro_id = p.pro_id\n"
+                    + "                    where p.pro_delete_at = 0 and p.pro_code LIKE ? ORDER BY p.pro_id DESC");
+            ps.setString(1, pro_code + "%");  // Thêm dấu % vào đây thay vì trong câu truy vấn
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = new Product(rs.getInt("pro_id"), rs.getInt("cate_id"), rs.getString("pro_code"), rs.getString("pro_name"), rs.getFloat("pro_price"), rs.getFloat("pro_discount"), rs.getString("pro_picture"), rs.getInt("pro_size"), rs.getString("pro_colour"), rs.getString("pro_brand"), rs.getString("pro_origin"), rs.getString("pro_material"), rs.getString("pro_description"), rs.getDate("pro_create_at"), rs.getDate("pro_update_at"), rs.getInt("pro_delete_at"));
+                list.add(product);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
+    public ResultSet getProduceCode1(String pro_code) {
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Product p join Category c on c.cate_id = p.cate_id\n"
+                    + "join Category_Details cd on cd.cateD_id = c.cateD_id\n"
+                    + "where p.pro_delete_at = 0 and p.pro_code LIKE ? ORDER BY pro_id DESC");
+            ps.setString(1, pro_code + "%");  // Thêm dấu % vào đây thay vì trong câu truy vấn
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
+    }
+
     public List getProduceSearchName(String pro_name) {
         ResultSet rs = null;
         List<Product> list = new ArrayList<>();
@@ -81,7 +235,7 @@ public class ProductDAO {
             PreparedStatement ps = conn.prepareStatement("select * from Product p join Category c on c.cate_id = p.cate_id\n"
                     + "                                      join Category_Details cd on cd.cateD_id = c.cateD_id\n"
                     + "                                     where p.pro_delete_at = 0 and p.pro_name like ? ORDER BY pro_id DESC");
-            ps.setString(1, "%" +pro_name + "%");  // Thêm dấu % vào đây thay vì trong câu truy vấn
+            ps.setString(1, "%" + pro_name + "%");  // Thêm dấu % vào đây thay vì trong câu truy vấn
             rs = ps.executeQuery();
             while (rs.next()) {
                 Product product = new Product(rs.getInt("pro_id"), rs.getInt("cate_id"), rs.getString("pro_code"), rs.getString("pro_name"), rs.getFloat("pro_price"), rs.getFloat("pro_discount"), rs.getString("pro_picture"), rs.getInt("pro_size"), rs.getString("pro_colour"), rs.getString("pro_brand"), rs.getString("pro_origin"), rs.getString("pro_material"), rs.getString("pro_description"), rs.getDate("pro_create_at"), rs.getDate("pro_update_at"), rs.getInt("pro_delete_at"));
@@ -96,7 +250,7 @@ public class ProductDAO {
     public ResultSet getProductByProCode(String pro_code) {
         ResultSet rs = null;
         try {
-            PreparedStatement ps = conn.prepareStatement("select * from Product where pro_code = ?");
+            PreparedStatement ps = conn.prepareStatement("select * from Product where pro_code = ? and pro_delete_at = 0");
             ps.setString(1, pro_code);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
@@ -120,6 +274,24 @@ public class ProductDAO {
         return s;
     }
 
+    public int getStockOfProduct(String pro_code, int pro_size) {
+        ResultSet rs = null;
+        int quantity_product = 0;
+        try {
+
+            PreparedStatement ps = conn.prepareStatement("select * from Product p join Stock s on s.pro_id = p.pro_id where p.pro_code = ? and p.pro_size = ?");
+            ps.setString(1, pro_code);
+            ps.setInt(2, pro_size);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                quantity_product = (rs.getInt("stock_import") - rs.getInt("stock_export"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return quantity_product;
+    }
+
     public String subString(String pro_code) {
         String s[] = pro_code.split("-");
         return s[0];
@@ -130,11 +302,11 @@ public class ProductDAO {
         return s[1];
     }
 
-    public ResultSet getGallery(int pro_id) {
+    public ResultSet getGallery(String pro_code) {
         ResultSet rs = null;
         try {
-            PreparedStatement ps = conn.prepareStatement("select * from Gallery where pro_id = ?");
-            ps.setInt(1, pro_id);
+            PreparedStatement ps = conn.prepareStatement("select * from Gallery g join Product p on g.pro_id = p.pro_id where p.pro_code = ?");
+            ps.setString(1, pro_code);
             rs = ps.executeQuery();
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -921,7 +1093,7 @@ public class ProductDAO {
         ResultSet rs = null;
         try {
             Statement st = conn.createStatement();
-            rs = st.executeQuery("  select * from Product p join Stock s on p.pro_id = s.pro_id where pro_delete_at = 0");
+            rs = st.executeQuery("select * from Product p join Stock s on p.pro_id = s.pro_id where pro_delete_at = 0 ORDER BY p.pro_id DESC");
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -969,14 +1141,15 @@ public class ProductDAO {
         return (count == 0) ? null : kh;
     }
 
-    public Product getProductByCode(String pro_code) {
-        ResultSet rs = null;
+    public Product getProductByCode(String pro_code,int pro_size) {
+        
         Product rx = null;
         try {
             Statement st = conn.createStatement();
-            PreparedStatement ps = conn.prepareStatement("select * from Product where pro_code = ?");
+            PreparedStatement ps = conn.prepareStatement("select * from Product where pro_code = ? and pro_size=?");
             ps.setString(1, pro_code);
-            rs = ps.executeQuery();
+            ps.setInt(2, pro_size);
+            ResultSet rs  = ps.executeQuery();
             if (rs.next()) {
                 rx = new Product(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getFloat(6), rs.getString(7),
                         rs.getInt(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13), rs.getDate(14), rs.getDate(15), rs.getInt(16));
@@ -1001,7 +1174,7 @@ public class ProductDAO {
     public Product getProductUpdate(int pro_id, Product newinfo) {
         int count = 0;
         try {
-            PreparedStatement ps = conn.prepareStatement(" update Product set cate_id = ?, pro_code = ?, pro_name = ?, pro_price = ?, pro_discount = ?, pro_picture = ?, pro_size = ?, pro_colour = ?, pro_brand = ?, pro_origin=?, pro_material = ?, pro_description=?, pro_create_at=?, pro_update_at=?, pro_delete_at=? where pro_id = ?");
+            PreparedStatement ps = conn.prepareStatement(" update Product set cate_id = ?, pro_code = ?, pro_name = ?, pro_price = ?, pro_discount = ?, pro_picture = ?, pro_size = ?, pro_colour = ?, pro_brand = ?, pro_origin=?, pro_material = ?, pro_description=?, pro_update_at=?, pro_delete_at=? where pro_id = ?");
             ps.setInt(1, newinfo.getCate_id());
             ps.setString(2, newinfo.getPro_code());
             ps.setString(3, newinfo.getPro_name());
@@ -1014,15 +1187,70 @@ public class ProductDAO {
             ps.setString(10, newinfo.getPro_origin());
             ps.setString(11, newinfo.getPro_material());
             ps.setString(12, newinfo.getPro_description());
-            ps.setDate(13, newinfo.getPro_create_at());
-            ps.setDate(14, newinfo.getPro_update_at());
-            ps.setInt(15, newinfo.getPro_delete_at());
-            ps.setInt(16, pro_id);
-            ps.executeUpdate();
+            ps.setDate(13, newinfo.getPro_update_at());
+            ps.setInt(14, newinfo.getPro_delete_at());
+            ps.setInt(15, pro_id);
+            count = ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return (count == 0) ? null : newinfo;
+    }
+
+    public ResultSet getCategory_Details() {
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Category_Details");
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
+    }
+
+    public ResultSet getCategory_Details(int pro_id) {
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Category_Details cd join Category c on cd.cateD_id = c.cateD_id join Product p on c.cate_id = p.cate_id where p.pro_id = ?");
+            ps.setInt(1, pro_id);
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
+    }
+
+    public ResultSet getCategoryLuxury() {
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Category where cateD_id = 1");
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
+    }
+
+    public ResultSet getCategorySport() {
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Category where cateD_id = 2");
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
+    }
+
+    public ResultSet getCategorySandal() {
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement("select * from Category where cateD_id = 3");
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rs;
     }
 
     ///////////////////
@@ -1082,7 +1310,7 @@ public class ProductDAO {
         return pro;
     }
 
-    public Product GetProId(int pro_id) {
+public Product GetProId(int pro_id) {
         Product pro = null;
         String sql = "select * from Product p join Stock s on p.pro_id = s.pro_id join Orders_Details od on od.pro_id = s.pro_id where p.pro_id=?";
         try {
@@ -1127,6 +1355,50 @@ public class ProductDAO {
             psTP.setInt(3, pro_id);
             count = psTP.executeUpdate();
         } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return count;
+    }
+
+   public int UpdateQuan(int pro_id, int detail_quantity) {
+        int count = 0;
+        try {
+            // Check if there are any active orders for the product
+            String selectOrdersSQL = "SELECT od.detail_quantity "
+                    + "FROM Orders_Details od "
+                    + "JOIN Orders o ON od.order_id = o.order_id "
+                    + "WHERE od.pro_id = ? "; 
+            PreparedStatement selectOrdersStmt = conn.prepareStatement(selectOrdersSQL);
+            selectOrdersStmt.setInt(1, pro_id);
+            ResultSet rs = selectOrdersStmt.executeQuery();
+
+            int totalOrderedQuantity = 0;
+            while (rs.next()) {
+                totalOrderedQuantity += rs.getInt("detail_quantity");
+            }
+
+            // Calculate the new stock_import value
+            int newStockImport = totalOrderedQuantity + detail_quantity;
+// Construct the SQL query to update the stock quantity
+            String updateStockSQL = "UPDATE Stock "
+                    + "SET stock_import = stock_import + ?, stock_export = stock_export - ? "
+                    + "WHERE pro_id = ?";
+
+            // Prepare the statement
+            PreparedStatement updateStockStmt = conn.prepareStatement(updateStockSQL);
+            updateStockStmt.setInt(1, newStockImport); // Set the new stock_import value
+            updateStockStmt.setInt(2, detail_quantity); // Set the stock_export value
+            updateStockStmt.setInt(3, pro_id); // Set the product ID
+
+            // Execute the update statement
+            count = updateStockStmt.executeUpdate();
+
+            // Close the statements and result set
+            rs.close();
+            selectOrdersStmt.close();
+            updateStockStmt.close();
+        } catch (SQLException ex) {
+            // Handle any SQL exceptions
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return count;

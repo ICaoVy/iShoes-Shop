@@ -16,72 +16,72 @@
         <link rel="stylesheet" href="user.css">
     </head>
     <body>
-        <!--SIDERBAR-->
-          <section id="siderbar">
-        <a href="/AdminController" class="brand">
-            <i class='bx bxs-smile' ></i>
-            <span class="text">Admin</span>
-        </a>
-        <ul class="side-menu top">
-            <li class="active">
-                <a href="/AdminController">
-                    <i class='bx bxs-dashboard' ></i> 
-                    <span class="text">Dashboard</span>
-                </a>
-            </li>
-            <li >
-                <a href="/AdminController/MyStore">
-                    <i class='bx bxs-shopping-bag-alt' ></i>
-                    <span class="text">My Store</span>
-                </a>
-            </li>
-            <li >
-                <a href="/AdminController/Analytics">
-                    <i class='bx bxs-doughnut-chart' ></i>
-                    <span class="text">Analytics</span>
-                </a>
-            </li>
-            <li >
-                <a href="#">
-                    <i class='bx bxs-chat' ></i>
-                    <span class="text">Message</span>
-                </a>
-            </li>
-            <li >
-                <a href="./manageruser.jsp">
-                    <i class='bx bxs-group' ></i>
-                    <span class="text">Manger user</span>
-                </a>
-            </li>
-            <li >
-                <a href="/AdminController/ListOrder">
-                    <i class='bx bx-list-check' ></i>
-                    <span class="text">List orders</span>
-                </a>
-            </li>
-            <li >
-                <a href="./importproduct.jsp">
-                    <i class='bx bxs-plus-circle' ></i>
-                    <span class="text">Import product</span>
-                </a>
-            </li>
-        </ul>
-        <ul class="side-menu top">
-            <li>
-                <a href="#">
-                    <i class='bx bxs-cog' ></i>
-                    <span class="text">Settings</span>
-                </a>
-            </li>
-            <li>
-                <a href="/LogoutController" class="logout">
-                    <i class='bx bx-log-out' ></i>
-                    <span class="text">Logout</span>
-                </a>
-            </li>
-        </ul>
-    </section>
-
+           <!--SIDERBAR-->
+        <section id="siderbar">
+            <a href="/AdminController" class="brand">
+                <i class='bx bxs-smile' ></i>
+                <span class="text">Admin</span>
+            </a>
+            <ul class="side-menu top">
+                <li class="active">
+                    <a href="/AdminController">
+                        <i class='bx bxs-dashboard' ></i> 
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/MyStore">
+                        <i class='bx bxs-shopping-bag-alt' ></i>
+                        <span class="text">My Store</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/Analytics">
+                        <i class='bx bxs-doughnut-chart' ></i>
+                        <span class="text">Analytics</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/ManegerUser">
+                        <i class='bx bxs-group' ></i>
+                        <span class="text">Manger user</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/ListOrder">
+                        <i class='bx bx-list-check' ></i>
+                        <span class="text">List orders</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/ListCustomerOrder">
+                        <i class='bx bxs-plus-circle' ></i>
+                        <span class="text">List Customer Order</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/MyCategory">
+                        <i class='bx bxs-plus-circle' ></i>
+                        <span class="text">Category</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/Gallery">
+                        <i class='bx bxs-plus-circle' ></i>
+                        <span class="text">Gallery</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="side-menu top">
+                <li>
+                    <a href="/LogoutController" class="logout">
+                        <i class='bx bx-log-out' ></i>
+                        <span class="text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+        <!--SIDEBAR-->
         <section id="content">
             <!--NAVBAR-->
             <nav>

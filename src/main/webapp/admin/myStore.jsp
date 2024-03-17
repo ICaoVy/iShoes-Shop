@@ -18,78 +18,84 @@
         <!--My CSS-->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" />
         <link rel="stylesheet" href="../cssAdmin/styleA.css">
-
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>ADMIN</title>
+        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#example').DataTable();
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
-        <!--SIDERBAR-->
+             <!--SIDERBAR-->
         <section id="siderbar">
-        <a href="/AdminController" class="brand">
-            <i class='bx bxs-smile' ></i>
-            <span class="text">Admin</span>
-        </a>
-        <ul class="side-menu top">
-            <li class="active">
-                <a href="/AdminController">
-                    <i class='bx bxs-dashboard' ></i> 
-                    <span class="text">Dashboard</span>
-                </a>
-            </li>
-            <li >
-                <a href="/AdminController/MyStore">
-                    <i class='bx bxs-shopping-bag-alt' ></i>
-                    <span class="text">My Store</span>
-                </a>
-            </li>
-            <li >
-                <a href="/AdminController/Analytics">
-                    <i class='bx bxs-doughnut-chart' ></i>
-                    <span class="text">Analytics</span>
-                </a>
-            </li>
-            <li >
-                <a href="#">
-                    <i class='bx bxs-chat' ></i>
-                    <span class="text">Message</span>
-                </a>
-            </li>
-            <li >
-                <a href="./manageruser.jsp">
-                    <i class='bx bxs-group' ></i>
-                    <span class="text">Manger user</span>
-                </a>
-            </li>
-            <li >
-                <a href="/AdminController/ListOrder">
-                    <i class='bx bx-list-check' ></i>
-                    <span class="text">List orders</span>
-                </a>
-            </li>
-            <li >
-                <a href="./importproduct.jsp">
-                    <i class='bx bxs-plus-circle' ></i>
-                    <span class="text">Import product</span>
-                </a>
-            </li>
-        </ul>
-        <ul class="side-menu top">
-            <li>
-                <a href="#">
-                    <i class='bx bxs-cog' ></i>
-                    <span class="text">Settings</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="logout">
-                    <i class='bx bx-log-out' ></i>
-                    <span class="text">Logout</span>
-                </a>
-            </li>
-        </ul>
-    </section>
+            <a href="/AdminController" class="brand">
+                <i class='bx bxs-smile' ></i>
+                <span class="text">Admin</span>
+            </a>
+            <ul class="side-menu top">
+                <li class="active">
+                    <a href="/AdminController">
+                        <i class='bx bxs-dashboard' ></i> 
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/MyStore">
+                        <i class='bx bxs-shopping-bag-alt' ></i>
+                        <span class="text">My Store</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/Analytics">
+                        <i class='bx bxs-doughnut-chart' ></i>
+                        <span class="text">Analytics</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/ManegerUser">
+                        <i class='bx bxs-group' ></i>
+                        <span class="text">Manger user</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/ListOrder">
+                        <i class='bx bx-list-check' ></i>
+                        <span class="text">List orders</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/ListCustomerOrder">
+                        <i class='bx bxs-plus-circle' ></i>
+                        <span class="text">List Customer Order</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/MyCategory">
+                        <i class='bx bxs-plus-circle' ></i>
+                        <span class="text">Category</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="/AdminController/Gallery">
+                        <i class='bx bxs-plus-circle' ></i>
+                        <span class="text">Gallery</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="side-menu top">
+                <li>
+                    <a href="/LogoutController" class="logout">
+                        <i class='bx bx-log-out' ></i>
+                        <span class="text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
         <!--SIDEBAR-->
-
         <!--CONTENT-->
         <section id="content">
             <!--NAVBAR-->
@@ -129,47 +135,49 @@
                     <a href="/AdminController/Create" sty class="btn-create" onclick="createProduct()">Create New Product</a>
                 </div>
 
-                <div class="table-data">
-                    <div class="order">
-                        <div class="head">
-                            <table class="product-table text-center">
-                                <thead>
-                                    <tr>
-                                        <th>Code</th>
-                                        <th>Name</th>
-                                        <th>Picture</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-center">
-                                    <%
-                                        ProductDAO aDAO = new ProductDAO();
-                                        ResultSet rs = aDAO.getAll();
-                                        while (rs.next()) {
-                                    %>
-                                    <tr>
-                                        <td><%=rs.getString("pro_code")%></td>
-                                        <td><%=rs.getString("pro_name")%></td>
-                                        <td><img style="margin: auto" class="img-fluid" width="120px" src="./../images/<%=rs.getString("pro_picture")%>" alt="<%=rs.getString("pro_picture")%>"/></td>
-                                        <td><%=rs.getFloat("pro_price")%></td>
-                                        <td><%=rs.getInt("stock_import")%></td>
-                                        <td>
-                                            <a href="/AdminController/Update?id=<%= rs.getInt("pro_id")%>" class="btn-edit" onclick="editProduct(1)" name="btn-edit"><i class="bi bi-pencil-square"></i></a>
-                                            <a href="/AdminController/Delete?id=<%= rs.getInt("pro_id")%>" class="btn-delete" onclick="deleteProduct(1)" name="btn-delete"><i class="bi bi-trash3"></i></a>
-                                            <a style="background-color: gray" href="/AdminController/Import?id=<%= rs.getInt("pro_id")%>" class="btn-delete" name="btn-delete"><i class="bi bi-upload"></i></i></a>
+                <!--                <div class="table-data">
+                                    <div class="order">-->
+                <div class="head container">
+                    <table id="example" class="product-table text-center">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Picture</th>
+                                <th>Size</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <%
+                                ProductDAO aDAO = new ProductDAO();
+                                ResultSet rs = aDAO.getAll();
+                                while (rs.next()) {
+                            %>
+                            <tr>
+                                <td><%=rs.getString("pro_code")%></td>
+                                <td><%=rs.getString("pro_name")%></td>
+                                <td><img style="margin: auto" class="img-fluid" width="120px" src="./../images/<%= rs.getString("pro_picture")%>" alt="<%=rs.getString("pro_picture")%>"/></td>
+                                <td><%=rs.getInt("pro_size")%></td>
+                                <td><%=rs.getFloat("pro_price")%></td>
+                                <td><%=rs.getInt("stock_import")%></td>
+                                <td>
+                                    <a href="/AdminController/Update?id=<%= rs.getInt("pro_id")%>" class="btn-edit" onclick="editProduct(1)" name="btn-edit"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="/AdminController/Delete?id=<%= rs.getInt("pro_id")%>" class="btn-delete" onclick="deleteProduct(1)" name="btn-delete"><i class="bi bi-trash3"></i></a>
+                                    <a style="background-color: gray" href="/AdminController/Import?id=<%= rs.getInt("pro_id")%>" class="btn-delete" name="btn-delete"><i class="bi bi-upload"></i></i></a>
 
-                                        </td>
-                                    </tr>
-                                    <%
-                                        }
-                                    %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                </td>
+                            </tr>
+                            <%
+                                }
+                            %>
+                        </tbody>
+                    </table>
                 </div>
+                <!--                    </div>
+                                </div>-->
             </main>
             <!--MAIN-->
         </section>

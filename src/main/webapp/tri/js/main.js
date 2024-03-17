@@ -60,14 +60,8 @@ eventReturnLogin.addEventListener('click', () => {
 const formLogin = document.querySelector('#login-final');
 const formRegister = document.querySelector('#register-final');
 
-formCart.addEventListener('submit',function(e){
-  e.preventDefault();
-  validateLogin();
-  validateRegister();
-})
-
 //#####Check validate login#####//
-function validateLogin(){
+function validateLogin() {
     var email = document.getElementById('email-login').value;
     var password = document.getElementById('password-login').value;
     var errorMessages = document.getElementById('error-messages');
@@ -76,197 +70,208 @@ function validateLogin(){
     errorMessages.innerHTML = '';
 
     //Check empty
-    if (email.trim()==='' || password.trim()===''){
-      errorMessages.innerHTML = 'Please fill in all fields';
-      return false;
+    if (email.trim() === '' || password.trim() === '') {
+        errorMessages.innerHTML = 'Please fill in all fields';
+        return false;
     }
 
     //Check email format
     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)){
-      errorMessages.innerHTML = 'Invalid email format';
-      return false;
+    if (!emailRegex.test(email)) {
+        errorMessages.innerHTML = 'Invalid email format';
+        return false;
     }
 
     //Check password length
-    if (password.length < 8){
-      errorMessages.innerHTML = 'Password must be at least 8 characters long';
-      return false;
+    if (password.length < 8) {
+        errorMessages.innerHTML = 'Password must be at least 8 characters long';
+        return false;
     }
 
     //If all checks pass, the form is valid
     return true;
-  }
+}
 //###################################################
 
 
 //#####Check validate register#####//
-function validateRegister(){
-  var fullName = document.querySelector('#register-final input[placeholder="Full name"]').value;
-        var email = document.querySelector('#register-final input[placeholder="Email"]').value;
-        var phoneNumber = document.querySelector('#register-final input[placeholder="Phone number"]').value;
-        var birthday = document.querySelector('#register-final input[placeholder="Birthday"]').value;
-        var password = document.querySelector('#register-final input[placeholder="Password"]').value;
-        var confirmPassword = document.querySelector('#register-final input[placeholder="Confirm password"]').value;
+function validateRegister() {
+    var fullName = document.querySelector('#register-final input[placeholder="Full name"]').value;
+    var email = document.querySelector('#register-final input[placeholder="Email"]').value;
+    var phoneNumber = document.querySelector('#register-final input[placeholder="Phone number"]').value;
+    var birthday = document.querySelector('#register-final input[placeholder="Birthday"]').value;
+    var address = document.querySelector('#register-final input[placeholder="Address"]').value;
+    var password = document.querySelector('#register-final input[placeholder="Password"]').value;
+    var confirmPassword = document.querySelector('#register-final input[placeholder="Confirm password"]').value;
 
-        // Reset error message before check validate
-        resetErrorMessages();
+    // Reset error message before check validate
+    resetErrorMessages();
 
-        // Check form
-        if (fullName === '') {
-            displayErrorMessage('full-name-error', 'Please enter your Full Name');
+    // Check form
+    if (fullName === '') {
+        displayErrorMessage('full-name-error', 'Please enter your Full Name');
+        return false;
+    }
+
+    if (email === '') {
+        displayErrorMessage('email-error', 'Please enter your Email');
+        return false;
+    } else {
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            displayErrorMessage('email-error', 'Your Email invalid!');
             return false;
         }
+    }
 
-        if (email === '') {
-            displayErrorMessage('email-error', 'Please enter your Email');
-            return false;
-        } else {
-            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(email)) {
-                displayErrorMessage('email-error', 'Your Email invalid!');
-                return false;
-            }
-        }
-
-        if (phoneNumber === '') {
-            displayErrorMessage('phone-number-error', 'Please enter your phone number');
-            return false;
-        } else {
-            var phonePattern = /^\d{10}$/;
-            if (!phonePattern.test(phoneNumber)) {
-                displayErrorMessage('phone-number-error', 'Your phone number invalid!');
-                return false;
-            }
-        }
-
-        if (birthday === '') {
-            displayErrorMessage('birthday-error', 'Please choose your Birthday');
+    if (phoneNumber === '') {
+        displayErrorMessage('phone-number-error', 'Please enter your phone number');
+        return false;
+    } else {
+        var phonePattern = /^\d{10}$/;
+        if (!phonePattern.test(phoneNumber)) {
+            displayErrorMessage('phone-number-error', 'Your phone number invalid!');
             return false;
         }
+    }
 
-        if (password === '') {
-            displayErrorMessage('password-error', 'Please enter your Password');
-            return false;
-        }
+    if (birthday === '') {
+        displayErrorMessage('birthday-error', 'Please choose your Birthday');
+        return false;
+    }
+    
+    if(address === ""){
+        displayErrorMessage('address-error', 'Your address invalid!');
+        return false;
+    }
 
-        if (confirmPassword === '') {
-            displayErrorMessage('confirm-password-error', 'Please enter your Password again');
-            return false;
-        }
+    if (password === '') {
+        displayErrorMessage('password-error', 'Please enter your Password');
+        return false;
+    }
+    
+        if (password.length >= 8) {
+        displayErrorMessage('password-error', 'Password must be getter than or equal 8');
+        return false;
+    }
 
-        if (password !== confirmPassword) {
-            displayErrorMessage('confirm-password-error', 'Password does not match password confirmation!');
-            return false;
-        }
+    if (confirmPassword === '') {
+        displayErrorMessage('confirm-password-error', 'Please enter your Password again');
+        return false;
+    }
 
-        // If there is an error, prevent form submission
-        if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
-          return false;
-      }
+    if (password !== confirmPassword) {
+        displayErrorMessage('confirm-password-error', 'Password does not match password confirmation!');
+        return false;
+    }
 
-      // If all is valid, submit the form
-      return true;
-  }
+    // If there is an error, prevent form submission
+    if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
+        return false;
+    }
+
+    // If all is valid, submit the form
+    return true;
+}
 //###################################################
 
 //##### Displays an error message - Reset an error message #####//
 function displayErrorMessage(elementId, message) {
-  var errorElement = document.getElementById(elementId);
-  errorElement.style.display = 'block';
-  errorElement.innerHTML = message;
+    var errorElement = document.getElementById(elementId);
+    errorElement.style.display = 'block';
+    errorElement.innerHTML = message;
 }
 
 function resetErrorMessages() {
-  var errorElements = document.querySelectorAll('.error-message');
-  errorElements.forEach(function (element) {
-      element.style.display = 'none';
-      element.innerHTML = '';
-  });
+    var errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(function (element) {
+        element.style.display = 'none';
+        element.innerHTML = '';
+    });
 }
 //#################################################
 
 //##### Check form contact #####//
-function validateContact(){
-        var fullName = document.querySelector('#contact input[placeholder="Full name"]').value;
-        var phone = document.querySelector('#contact input[placeholder="Phone"]').value;
-        var address = document.querySelector('#contact input[placeholder="Address"]').value;
+function validateContact() {
+    var fullName = document.querySelector('#contact input[placeholder="Full name"]').value;
+    var phone = document.querySelector('#contact input[placeholder="Phone"]').value;
+    var address = document.querySelector('#contact input[placeholder="Address"]').value;
 
-        // Reset error message before check validate
-        resetErrorMessages();
+    // Reset error message before check validate
+    resetErrorMessages();
 
-        // Check form
-        if (fullName === '') {
-          displayErrorMessage('full-name-error', 'Please enter your Full Name');
-      }
+    // Check form
+    if (fullName === '') {
+        displayErrorMessage('full-name-error', 'Please enter your Full Name');
+    }
 
-      if (phone === '') {
-          displayErrorMessage('phone-error', 'Please enter your phone number');
-      } else {
-          var phonePattern = /^\d{10}$/;
-          if (!phonePattern.test(phone)) {
-              displayErrorMessage('phone-error', 'Your phone number invalid!');
-          }
-      }
+    if (phone === '') {
+        displayErrorMessage('phone-error', 'Please enter your phone number');
+    } else {
+        var phonePattern = /^\d{10}$/;
+        if (!phonePattern.test(phone)) {
+            displayErrorMessage('phone-error', 'Your phone number invalid!');
+        }
+    }
 
-      if (address === '') {
-          displayErrorMessage('address-error', 'Please enter your Address');
-      }
+    if (address === '') {
+        displayErrorMessage('address-error', 'Please enter your Address');
+    }
 
-      // If there is an error, prevent form submission
-      if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
-          return false;
-      }
+    // If there is an error, prevent form submission
+    if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
+        return false;
+    }
 
-      // If all is valid, submit the form
-      return true;
+    // If all is valid, submit the form
+    return true;
 }
 //#################################################
 
 //##### Check form pay #####//
-function validatePay(){
-        var fullName = document.querySelector('#pay input[placeholder="Full name"]').value;
-        var email = document.querySelector('#pay input[placeholder="Email"]').value;
-        var phone = document.querySelector('#pay input[placeholder="Phone"]').value;
-        var deliveryAddress = document.querySelector('#pay textarea[placeholder="Delivery Address"]').value;
+function validatePay() {
+    var fullName = document.querySelector('#pay input[placeholder="Full name"]').value;
+    var email = document.querySelector('#pay input[placeholder="Email"]').value;
+    var phone = document.querySelector('#pay input[placeholder="Phone"]').value;
+    var deliveryAddress = document.querySelector('#pay textarea[placeholder="Delivery Address"]').value;
 
-        // Reset error message before check validate
-        resetErrorMessages();
+    // Reset error message before check validate
+    resetErrorMessages();
 
-        // Check form
-        if (fullName === '') {
-          displayErrorMessage('full-name-error', 'Please enter your Full name');
-      }
+    // Check form
+    if (fullName === '') {
+        displayErrorMessage('full-name-error', 'Please enter your Full name');
+    }
 
-      if (email === '') {
-          displayErrorMessage('email-error', 'Please enter your Email');
-      } else {
-          var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailPattern.test(email)) {
-              displayErrorMessage('email-error', 'Your Email invalid!');
-          }
-      }
+    if (email === '') {
+        displayErrorMessage('email-error', 'Please enter your Email');
+    } else {
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            displayErrorMessage('email-error', 'Your Email invalid!');
+        }
+    }
 
-      if (phone === '') {
-          displayErrorMessage('phone-error', 'Please enter your phone number');
-      } else {
-          var phonePattern = /^\d{10}$/;
-          if (!phonePattern.test(phone)) {
-              displayErrorMessage('phone-error', 'Your phone number invalid!');
-          }
-      }
+    if (phone === '') {
+        displayErrorMessage('phone-error', 'Please enter your phone number');
+    } else {
+        var phonePattern = /^\d{10}$/;
+        if (!phonePattern.test(phone)) {
+            displayErrorMessage('phone-error', 'Your phone number invalid!');
+        }
+    }
 
-      if (deliveryAddress === '') {
-          displayErrorMessage('delivery-address-error', 'Please enter delivery address');
-      }
+    if (deliveryAddress === '') {
+        displayErrorMessage('delivery-address-error', 'Please enter delivery address');
+    }
 
-      // If there is an error, prevent form submission
-      if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
-          return false;
-      }
+    // If there is an error, prevent form submission
+    if (document.querySelectorAll('.error-message:not([style="display: none;"])').length > 0) {
+        return false;
+    }
 
-      // If all is valid, submit the form
-      return true;
+    // If all is valid, submit the form
+    return true;
 }
 
 // ########## Decrease and Increase ###############
@@ -275,24 +280,24 @@ function validatePay(){
 function increasesQuantity() {
     var quantityInput = document.getElementById('value-quantity');
     var currentQuantity = parseInt(quantityInput.value);
-  
+
     if (!isNaN(currentQuantity)) {
-      quantityInput.value = currentQuantity + 1;
-      updateTotalPrice();
+        quantityInput.value = currentQuantity + 1;
+        updateTotalPrice();
     }
 }
 
 function decreasesQuantity() {
     var quantityInput = document.getElementById('value-quantity');
     var currentQuantity = parseInt(quantityInput.value);
-  
+
     if (!isNaN(currentQuantity) && currentQuantity > 1) {
-      quantityInput.value = currentQuantity - 1;
-      
-      updateTotalPrice();
+        quantityInput.value = currentQuantity - 1;
+
+        updateTotalPrice();
 
     } else {
-      alert("Quantity cannot be less than one");
+        alert("Quantity cannot be less than one");
     }
 }
 
@@ -300,9 +305,9 @@ function updateTotalPrice() {
     // var price = document.getElementById("price").textContent;
     var quantityInput = document.getElementById('value-quantity').value;
     var totalprice = quantityInput * 2000;
-    document.getElementById("price").innerHTML = totalprice.toFixed(3) +"vnd";
-    
-    
+    document.getElementById("price").innerHTML = totalprice.toFixed(3) + "vnd";
+
+
 }
 
 updateTotalPrice();
@@ -342,7 +347,7 @@ function clickCheckbox() {
             // Uncheck the checkbox if the user cancels the deletion
             checkbox.checked = false;
         }
-    
+
     } else {
         alert("Checkbox not found. Please check the checkbox before attempting to delete.");
     }
@@ -354,5 +359,5 @@ function changeImage(image) {
 }
 
 
-  
+
 

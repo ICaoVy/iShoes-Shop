@@ -18,10 +18,25 @@ public class Order_Details extends Product {
     private int detail_size;
     private String detail_colour;
     private String pro_picture;
+        private String pro_name;
 
     public Order_Details() {
     }
 
+ 
+
+    public Order_Details(int detail_id, int pro_id, int order_id, float detail_price, int detail_quantity, int detail_size, String detail_colour, String pro_picture, String pro_name) {
+        this.detail_id = detail_id;
+        this.pro_id = pro_id;
+        this.order_id = order_id;
+        this.detail_price = detail_price;
+        this.detail_quantity = detail_quantity;
+        this.detail_size = detail_size;
+        this.detail_colour = detail_colour;
+        this.pro_picture = pro_picture;
+        this.pro_name = pro_name;
+    }
+    
     public Order_Details(int detail_id, int pro_id, int order_id, float detail_price, int detail_quantity, int detail_size, String detail_colour, String pro_picture) {
         super();
         this.detail_id = detail_id;
@@ -44,6 +59,16 @@ public class Order_Details extends Product {
         this.detail_size = detail_size;
         this.detail_colour = detail_colour;
 
+    }
+    
+       @Override
+    public String getPro_name() {
+        return pro_name;
+    }
+
+    @Override
+    public void setPro_name(String pro_name) {
+        this.pro_name = pro_name;
     }
 
     @Override

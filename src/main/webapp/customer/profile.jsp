@@ -4,6 +4,8 @@
     Author     : ASUS
 --%>
 
+<%@page import="java.sql.ResultSet"%>
+<%@page import="DAOs.CustomerDAO"%>
 <%@page import="DAOs.CartDAO"%>
 <%@page import="Models.Customer"%>
 <%@page import="DAOs.AccountDAO"%>
@@ -31,23 +33,23 @@
                 integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"
         defer></script>
     </head>
-        <style>
-            .quantity-order{
-                position: absolute;
-                margin-left: 15px;
-                margin-bottom: 10px;
-            }
-            
-            .profile:hover{
-                background: white;
-                color: black;
-            }
-            
-            .profile{
-                margin-left: 100px;
-                padding: 10px 50px;
-            }
-        </style>
+    <style>
+        .quantity-order{
+            position: absolute;
+            margin-left: 15px;
+            margin-bottom: 10px;
+        }
+
+        .profile:hover{
+            background: white;
+            color: black;
+        }
+
+        .profile{
+            margin-left: 100px;
+            padding: 10px 50px;
+        }
+    </style>
     <body>
         <header>
             <div class="mt-3 head-close">
@@ -123,8 +125,8 @@
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
                                         <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
 <!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
@@ -143,10 +145,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -161,19 +163,48 @@
                         <div class="mt-5"><a href="/ProfileController/Security" style="text-decoration: none" class="profile mt-4">Security</a></div>
                     </div>
                     <div class="col-md-8 profile-file">
-                        <form class="" action="">
+                        <%
+                            CustomerDAO pDAO = new CustomerDAO();
+                            ResultSet rs = pDAO.getCustomerByID1(cus_id);
+                            if (rs.next()) {
+                        %>
+
+                        <form class="" action="ProfileController" method="post" onsubmit="return validateForm()">
                             <label class="text-start mt-2" for="Email">Email</label>
-                            <input type="text" placeholder="Email" value="ishoes@gmail.vn.com" class="form-control" disabled>
+                            <input type="text" placeholder="Email" value="<%= rs.getString("cus_email")%>" class="form-control" disabled>
+                            <input style="display: none" name="email" type="text" placeholder="Email" value="<%= rs.getString("cus_email")%>" class="form-control">
                             <label class="text-start mt-2" for="">Name</label>
-                            <input type="text" placeholder="Full name" value="Ha Cao Vi" class="form-control">
+                            <input name="fullname" type="text" placeholder="Full name" value="<%= rs.getString("cus_fullname")%>" class="form-control">
                             <label class="text-start mt-2" for="">Phone</label>
-                            <input type="text" placeholder="Phone number" value="0912345678" class="form-control">
+                            <input name="phone" type="text" placeholder="Phone number" value="<%= (rs.getString("cus_phone") != null) ? rs.getString("cus_phone") : ""%>" class="form-control">
                             <label class="text-start mt-2" for="">Birthday</label>
-                            <input type="date" class="form-control">
+                            <input name="date" type="date" value="<%= rs.getDate("cus_birthday")%>" class="form-control">
                             <label class="text-start mt-2" for="">Address</label>
-                            <input type="text" placeholder="Address" value="Hoa Tan - Chau Thanh - Dong Thap" class="form-control">
-                            <button class="save mt-3 form-control">Save <i class="bi bi-floppy-fill"></i></button>
+                            <input name="address"  type="text" placeholder="Address" value="<%= (rs.getString("cus_address") != null) ? rs.getString("cus_address") : ""%>" class="form-control">
+                            <button type="submit" name="btn-save" class="save mt-3 form-control">Save <i class="bi bi-floppy-fill"></i></button>
                         </form>
+
+                        <%
+                            }
+                        %>
+
+                        <script>
+                            function validateForm() {
+                                var email = document.forms[0]["email"].value;
+                                var fullname = document.forms[0]["fullname"].value;
+                                var phone = document.forms[0]["phone"].value;
+                                var date = document.forms[0]["date"].value;
+                                var address = document.forms[0]["address"].value;
+
+                                if (email === "" || fullname === "" || phone === "" || date === "" || address === "") {
+                                    alert("Please fill in all required fields.");
+                                    return false; // prevent form submission
+                                }
+
+                                // If all fields are filled, you can proceed with the form submission
+                                return true;
+                            }
+                        </script>
                     </div>
                 </div>
             </div>

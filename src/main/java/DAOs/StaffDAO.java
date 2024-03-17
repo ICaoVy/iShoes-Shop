@@ -39,6 +39,17 @@ public class StaffDAO {
             Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void deleteStaff(int staff_id, int staff_deleted) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("UPDATE Staff SET staff_deleted = ? where staff_id = ?");
+            ps.setInt(1, staff_deleted);
+            ps.setInt(2, staff_id);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();

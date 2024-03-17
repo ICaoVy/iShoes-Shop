@@ -56,8 +56,8 @@
 
                         <div id="hihi" class="col-md-6 clickClose">
                             <ul class="nav mt-3">
-                                <li class="nav-item"><a class="nav-link" id="current-main" href="/">Home</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/ProductController">Product</a></li>
+                                <li class="nav-item"><a class="nav-link"  href="/">Home</a></li>
+                                <li class="nav-item"><a class="nav-link" id="current-main" href="/ProductController">Product</a></li>
                                 <li class="nav-item"><a class="nav-link" href="/IntroduceController">Introduce</a></li>
                                 <li class="nav-item"><a class="nav-link" href="/ContactController">Contact</a></li>
                             </ul>
@@ -117,12 +117,12 @@
                                     <div class="btn-group col-md-3">
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
-                                        <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                       <div class="dropdown-menu menu-homeC">
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
-                                                <button name="btnlogout" style="background: none;color: black; border: none">Logout</button>
+                                                <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
                                             <!--                                        <a href="/LogoutController" class="dropdown-item">Logout</a>-->
                                         </div>
@@ -138,14 +138,25 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
         </header>
+        <%
+            String checkStockMessage = (String) session.getAttribute("checkStock");
+        %>
+        <% if (checkStockMessage == null || checkStockMessage.isEmpty()) { %>
+        <div class="text-center alert alert-danger" style="display: none;">
+        </div>
+        <% } else {%>
+        <div class="text-center alert alert-danger">
+            <%= checkStockMessage%>
+        </div>
+        <% } %>
         <%
 
             String checkCateName = "";
@@ -190,7 +201,7 @@
                                 <ul class="cat-title-show luxuryUL">
                                     <%
                                         CategoryDAO cgDAO = new CategoryDAO();
-                                        ResultSet rscate = cgDAO.getLuxyry();
+                                        ResultSet rscate = cgDAO.getLuxury();
                                         while (rscate.next()) {
                                     %>
                                     <li><a href="/ProductController?nameCate=<%= rscate.getString("cate_name") + pathForCate%>"><%= rscate.getString("cate_name")%></a></li>
@@ -505,7 +516,7 @@
                                             if (uniqueProductCodes.add(productCode)) {
                                 %>
                                 <div onmouseenter="ShowOther(event)" onmouseleave="HideOther(event)" class="col-md-4 text-center show-list-pro">
-                                    <a class="event-mouse-a" href="/ProductController/Details?id=<%= l.getPro_id()%>&proCode=<%= l.getPro_code()%>"">
+                                    <a class="event-mouse-a" href="/ProductController/Details?id=<%= l.getPro_id()%>&proCode=<%= l.getPro_code()%>">
                                         <img width="100%" class="images-change" src="./images/<%= l.getPro_picture()%>" class="img-fluid" alt="<%= l.getPro_picture()%>">
                                     </a>
                                     <div class="mt-1 text-start check-other show-list-other">
@@ -514,7 +525,7 @@
                                             Set<String> uniqueProductCodes1 = new HashSet<>();
                                             for (Product lc : productListChild) {
 
-                                                if (uniqueProductCodes1.add(lc.getPro_code())) {
+                                                if (uniqueProductCodes1.add(lc.getPro_code()) && pDAO.getStockOfProduct(lc.getPro_code(), lc.getPro_size()) > 0) {
                                         %>
 
                                         <a class="hover1" href="/ProductController/Details?id=<%= lc.getPro_id()%>"><img src="./images/<%= lc.getPro_picture()%>" class="img-fluid" width="40px" alt="<%= lc.getPro_picture()%>"></a>
@@ -524,8 +535,9 @@
                                             }
                                         %>
                                     </div>
-                                    <p class="text-start mt-2"><%= l.getPro_name()%><br>
-                                        <strong><%= l.getPro_price()%></strong>
+
+                                    <p class="text-start mt-2"><%= l.getPro_name()%> <br>
+                                        <strong><%= l.getPro_price()%>vnd</strong>
                                     </p>
 
                                 </div>
@@ -534,9 +546,9 @@
                                     }
                                 } else {
                                 %>
-                                
+
                                 <h3>Product Not Found!!!</h3>
-                                
+
                                 <%
                                     }
                                 %>

@@ -110,6 +110,9 @@ public class LoginController extends HttpServlet {
                     response.sendRedirect("/");
                     System.out.println("Add Cookie Successfull");
                 } else {
+                    String message = "Account or password is incorrect";
+                    HttpSession session = request.getSession();
+                    session.setAttribute("checkLoginMess", message);
                     response.sendRedirect("/LoginController");
                 }
             } else if (email.contains("@ishoes")) {
@@ -137,9 +140,15 @@ public class LoginController extends HttpServlet {
                     response.addCookie(staff_idC);
                     response.sendRedirect("/AdminController");
                 } else {
+                    String message = "Account or password is incorrect";
+                    HttpSession session = request.getSession();
+                    session.setAttribute("checkLoginMess", message);
                     response.sendRedirect("/LoginController");
                 }
             } else {
+                String message = "Account or password is incorrect";
+                HttpSession session = request.getSession();
+                session.setAttribute("checkLoginMess", message);
                 response.sendRedirect("/LoginController");
             }
 

@@ -47,7 +47,7 @@ public class LoginGoogleHandler extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         System.out.println("Show here");
         System.out.println(request.getParameter("code"));
-        String code = request.getParameter("code");
+            String code = request.getParameter("code");
         String accessToken = getToken(code);
         UserGoogleDto user = getUserInfo(accessToken);
         if (user != null) {

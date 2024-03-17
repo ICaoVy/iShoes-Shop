@@ -73,6 +73,7 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         OrdersDAO odao = new OrdersDAO();
         Order_DetailDAO oddao = new Order_DetailDAO();
+        ProductDAO pdao = new ProductDAO();
         int cusID = 0;
         HttpSession session = request.getSession();
         String cus_id = null;
@@ -103,12 +104,117 @@ public class OrderController extends HttpServlet {
                         session.setAttribute("orders", order);
                         request.getRequestDispatcher("../customer/purchasehistory.jsp").forward(request, response);
 
+                    } else if (path.startsWith("/OrderController/Ordered/cancel/")) {
+                        String[] split = path.trim().split("/");
+                        try {
+                            int order_id = Integer.parseInt(split[split.length - 1]);
+
+                            Orders o = odao.GetOrderById(order_id);
+
+                            if (o.getOrder_status() == 0) {
+                                LinkedList<Order_Details> orderDetails = oddao.GetListDetailByOId(order_id);
+
+                                for (Order_Details od : orderDetails) {
+                                    int pro_id = od.getPro_id();
+                                    int detail_quantity = od.getDetail_quantity();
+                                    int updateQuan = pdao.UpdateQuan(pro_id, detail_quantity);
+                                }
+
+                                odao.deleteOrderAndDetails(order_id);
+                            }
+
+                            response.sendRedirect("/OrderController/Ordered");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("/OrderController/Ordered");
+                        }
+                    } else if (path.endsWith("/OrderController/Creditcard")) {
+                        request.getRequestDispatcher("../customer/creditcard.jsp").forward(request, response);
+                    } else if (path.startsWith("/OrderController/Ordered/detail")) {
+                        String[] split = path.trim().split("/");
+//request.getRequestDispatcher("/customer/viewOrdersDetails.jsp").forward(request, response);
+                        try {
+                            int order_id = Integer.parseInt(split[split.length - 1]);
+                            Orders o = odao.GetOrderById(order_id);
+                            if (o.getOrder_status() == 0 || o.getOrder_status() == 1) {
+                                LinkedList<Order_Details> oDetail = oddao.GetListViewDetailByOId(order_id);
+                                session.setAttribute("oDetail", oDetail);
+                            }
+                            request.getRequestDispatcher("/customer/viewOrdersDetails.jsp").forward(request, response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("/OrderController/Ordered");
+                        }
+                        return;
+                    } else if (path.startsWith("/OrderController/Ordered/editinfo")) {
+                        request.getRequestDispatcher("/customer/editInforOrder.jsp").forward(request, response);
+                        String[] split = path.trim().split("/");
+                        try {
+                            int order_id = Integer.parseInt(split[split.length - 1]);
+                            Orders o = odao.GetOrderById(order_id);
+                            if (o.getOrder_status() == 0) {
+                                LinkedList<Order_Details> oDetail = oddao.GetListViewDetailByOId(order_id);
+                                session.setAttribute("oDetail", oDetail);
+                            }
+                            response.sendRedirect("/OrderController/Ordered");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("/OrderController/Ordered");
+                        }
+                        return;
+                    } else if (path.startsWith("/OrderController/Ordered/BuyAgain")) {
+//                        request.getRequestDispatcher("/customer/cart.jsp").forward(request, response);
+                        CartDAO cdao = new CartDAO();
+                        String[] split = path.trim().split("/");
+                        LinkedList<Carts> cart = new LinkedList<>();
+                        LinkedList<Carts> cart_list = (LinkedList<Carts>) session.getAttribute("cart_list");
+                        cusID = Integer.parseInt(cus_id);
+                        try {
+                            int order_id = Integer.parseInt(split[split.length - 1]);
+                            Orders o = odao.getOrderID_ProID(order_id);
+                            Product p = pdao.GetProIdByQuan(o.getPro_id());
+                            Order_Details od = oddao.GetDetailID(order_id);
+                            if (cart_list == null) {
+                                
+                                Carts c = new Carts(1, cusID, od.getPro_id(), od.getDetail_price(), od.getDetail_quantity(), od.getDetail_size(), od.getDetail_colour(), od.getPro_picture(), od.getPro_name());
+                                Carts add = cdao.AddCart(c);
+                                cart = cdao.GetListCartByAccID(cusID);
+                                session.setAttribute("cart_list", cart);
+                            } else {
+                                boolean checkIdExist = false;
+                                for (Carts c : cart_list) {
+                                    if (p.getPro_id() == c.getPro_id()) {
+                                        checkIdExist = true;
+                                        if (c.getCart_quantity() < p.getStock_import()) {
+                                            c.setCart_quantity(c.getCart_quantity() + 1);
+                                            Carts update = cdao.UpdateQuan(c);
+                                            cart = cdao.GetListCartByAccID(cusID);
+                                            session.setAttribute("cart_list", cart);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!checkIdExist) {
+                                    Carts c = new Carts(1, cusID, od.getPro_id(), od.getDetail_price(), od.getDetail_quantity(), od.getDetail_size(), od.getDetail_colour(), od.getPro_picture(), od.getPro_name());
+                                    Carts add = cdao.AddCart(c);
+                                    cart = cdao.GetListCartByAccID(cusID);
+                                    session.setAttribute("cart_list", cart);
+                                }
+                            }
+                            response.sendRedirect("/CartController");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("/OrderController/Ordered");
+                        }
+                        return;
                     }
 
                 }
 
             }
         }
+
     }
 
     /**
@@ -145,9 +251,9 @@ public class OrderController extends HttpServlet {
                 }
 
             }
-            for (Carts cart : cart_buy) {
-                cdao.DeleteItemCart(cart.getCart_id());
-            }
+//            for (Carts cart : cart_buy) {
+//                cdao.DeleteItemCart(cart.getCart_id());
+//            }
             Float tong_tien = 0.0f;
             if (cart_buy.size() >= 1) {
                 for (Carts c : cart_buy) {
@@ -167,18 +273,28 @@ public class OrderController extends HttpServlet {
             session.setAttribute("cart_buy", cart_buy);
             response.sendRedirect("/OrderController");
         } else if (request.getParameter("btnCheckOut") != null) {
+            LinkedList<Carts> cart_buy = (LinkedList<Carts>) session.getAttribute("cart_buy");
+            if (cart_buy == null) {
+                // Handle the case where cart_buy is null
+                response.sendRedirect("/CartController");
+                return;
+            }
+
+            for (Carts cart : cart_buy) {
+                cdao.DeleteItemCart(cart.getCart_id());
+            }
             LinkedList<Carts> buy = (LinkedList<Carts>) session.getAttribute("cart_buy");
 
 //            Customer cus = (Customer) session.getAttribute("cus_inf");
-                Cookie cookies[] = request.getCookies();
-                int cus_id=0;
-                if(cookies != null){
-                    for (Cookie cooky : cookies) {
-                        if(cooky.getName().equalsIgnoreCase("idC")){
-                            cus_id = Integer.parseInt(cooky.getValue());
-                        }
+            Cookie cookies[] = request.getCookies();
+            int cus_id = 0;
+            if (cookies != null) {
+                for (Cookie cooky : cookies) {
+                    if (cooky.getName().equalsIgnoreCase("idC")) {
+                        cus_id = Integer.parseInt(cooky.getValue());
                     }
                 }
+            }
             // Kiểm tra xem có thông tin khách hàng trong session hay không
 //            if (cus == null) {
 //                // Nếu không có, chuyển hướng đến trang đăng nhập
@@ -216,6 +332,25 @@ public class OrderController extends HttpServlet {
             session.setAttribute("orders", order);
             // Chuyển hướng đến trang đã đặt hàng thành công
             response.sendRedirect("/OrderController/Ordered");
+        } else if (request.getParameter("btn-edit") != null) {
+            //Lấy thông tin từ form
+            int id = Integer.parseInt(request.getParameter("orderID"));
+            String name = request.getParameter("orderFullname");
+            String email = request.getParameter("orderEmail");
+            String phone = request.getParameter("orderPhone");
+            String address = request.getParameter("orderAddress");
+            String note = request.getParameter("orderNote");
+            //Gọi hàm và cập nhật lại thông tin
+            int rs = odao.editInforOrderById(id, email, phone, address, note);
+            if (rs != 0) {
+                //Gọi hàm để setattribute lại sau đó trả về trang view detail và show ra thông tin đã cập nhật
+                LinkedList<Order_Details> oDetail = od_dao.GetListViewDetailByOId(id);
+                session.setAttribute("oDetail", oDetail);
+                response.sendRedirect("/OrderController/Ordered/detail/" + id);
+            }
+        } else if (request.getParameter("btn-cancel") != null) {
+            int id = Integer.parseInt(request.getParameter("orderID"));
+            response.sendRedirect("/OrderController/Ordered/detail/" + id);
         }
 
         // Create an Order object
@@ -233,3 +368,4 @@ public class OrderController extends HttpServlet {
     }// </editor-fold>
 
 }
+//Sửa hết.

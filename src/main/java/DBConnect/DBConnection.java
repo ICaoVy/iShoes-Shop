@@ -18,7 +18,7 @@ public class DBConnection {
         //khai bao driver
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
-        //tao đối tượng connection thogn qua drivermanager
+              //tao đối tượng connection thogn qua drivermanager
         Connection conn = DriverManager.getConnection("jdbc:sqlserver://CAOVY-1902T\\MSSQLSERVERICAO:1433;databaseName=Shop_iShoes_Group5;user=sa;password=1;encrypt=true;trustServerCertificate=true;");
         return conn;
     }

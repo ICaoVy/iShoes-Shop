@@ -33,15 +33,15 @@
 
 
     </head>
-        <style>
-            .quantity-order{
-                position: absolute;
-                margin-left: 15px;
-                margin-bottom: 10px;
-            }
-        </style>
+    <style>
+        .quantity-order{
+            position: absolute;
+            margin-left: 15px;
+            margin-bottom: 10px;
+        }
+    </style>
     <body>
-               <header>
+        <header>
             <div class="mt-3 head-close">
                 <nav class="container">
                     <div class="row">
@@ -107,17 +107,17 @@
                                             checkCount = "none";
                                         }
                                     %>
-                                    <span class="align-items-center quantity-order" style="display: <%= checkCount %> ;border-radius:100px ; color: white;background: red; padding: 0px 6px; width: fit-content;"><%= count%></span>
+                                    <span class="align-items-center quantity-order" style="display: <%= checkCount%> ;border-radius:100px ; color: white;background: red; padding: 0px 6px; width: fit-content;"><%= count%></span>
                                     <a href="/CartController"><i class="bi bi-cart2"></i></a>
                                 </div>
                                 <div class="col-md-4 text-start mt-1">
                                     <div class="btn-group col-md-3">
                                         <button style="border: none;" type="button" class="btn btn-dark dropdown-toggle"
                                                 data-bs-toggle="dropdown"><span class="username"><%= ad.decodeString(fullname)%></span></button>
-                                        <div class="dropdown-menu menu-homeC">
-                                            <a href="#" class="dropdown-item">Profile</a>
-                                            <a href="../purchasehistory.jsp" class="dropdown-item">History Bought</a>
-                                            <a href="#" class="dropdown-item">...</a>
+                                       <div class="dropdown-menu menu-homeC">
+                                            <a href="/ProfileController" class="dropdown-item">Profile</a>
+                                            <a href="/OrderController/Ordered" class="dropdown-item">Bought</a>
+<!--                                            <a href="#" class="dropdown-item">...</a>-->
                                             <form class="dropdown-item" action="LogoutController" method="post">
                                                 <button name="btnlogout" style="background: none;color: black">Logout</button>
                                             </form>
@@ -135,10 +135,10 @@
             </div>
             <div class="container mt-3 text-center">
                 <!-- Form tìm kiếm -->
-                <form action="" class="d-flex justify-content-center">
+                <form action="ProductController" method="post" class="d-flex justify-content-center">
                     <div class="search input-group">
-                        <input class="form-control" type="text" placeholder="Search" />
-                        <button><i class="bi bi-search"></i></button>
+                        <input class="form-control" type="text" name="search" placeholder="Search" />
+                        <button type="submit" name="btn-search"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -151,13 +151,14 @@
                     <div class="text-center">
                         <h3>Reset Password</h3>
                         <p>We will email you to reset your password</p>
-                        <form class="form-login" action="">
-                            <input type="password" class="form-control" placeholder="Email Code">
+                        <form class="form-login" action="ForgotController" method="post" onsubmit="return validateForm()">
+                            <input name="otp" id="otp" type="password" class="form-control" placeholder="Email Code">
                             <br>
-                            <input type="password" class="form-control" placeholder="New Password">
+                            <input name="newPass" id="newPass" type="password" class="form-control" placeholder="New Password">
                             <br>
-                            <input type="password" class="form-control" placeholder="Confirm password">
-                            <button class="form-control mt-3 button-login" type="submit">Change</button>
+                            <input name="confirm" id="confirm" type="password" class="form-control" placeholder="Confirm password">
+                            <div style="width: fit-content;margin: auto;margin-right: 3px" class="text-end"><button name="btn-sendAgain" style="color: #007bff;background:white">Send again?</button></div>
+                            <button name="btn-ChangeForgot" class="form-control mt-3 button-login" type="submit">Change</button>
                         </form>
                     </div>
                 </div>
@@ -214,8 +215,49 @@
             <span>&copy; Copyright 2023, Design by Ha Cao Vi</span>
         </div>
     </footer>
+                                        
+                                        
 
+    <script>
+        function validateForm() {
+            var otpInput = document.getElementById('otp');
+            var newPassInput = document.getElementById('newPass');
+            var confirmInput = document.getElementById('confirm');
 
+            var otpValue = otpInput.value.trim();
+            var newPassValue = newPassInput.value.trim();
+            var confirmValue = confirmInput.value.trim();
+
+            // Kiểm tra input rỗng
+            if (otpValue === '') {
+                alert('Email Code cannot be empty');
+                return false;
+            }
+
+            if (newPassValue === '') {
+                alert('New Password cannot be empty');
+                return false;
+            }
+
+            if (confirmValue === '') {
+                alert('Confirm Password cannot be empty');
+                return false;
+            }
+
+            // Kiểm tra xác nhận mật khẩu
+            if (newPassValue !== confirmValue) {
+                alert('New Password and Confirm Password must match');
+                return false;
+            }
+            
+            if (newPassValue.length < 8 ) {
+                alert('New Password must be getter than 8');
+                return false;
+            }
+
+            return true; // Nếu không có lỗi, cho phép submit
+        }
+    </script>
     <script src="./lib/bootstrap/bootstrap_js/bootstrap.min.js"></script>
     <script src="./js/main.js"></script>
 </body>
